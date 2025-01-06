@@ -10,11 +10,12 @@ namespace BulkyWeb.Areas.Admin.Controllers
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ProductController(IUnitOfWork unitOfWork)
+        public ProductController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
             _unitOfWork = unitOfWork;
-
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public IActionResult Index()
@@ -27,8 +28,8 @@ namespace BulkyWeb.Areas.Admin.Controllers
         }
 
 
-        /////////////------------------CREATE----------------/////////////////////
-        public IActionResult Create()
+        /////////////------------------Update\Insert----------------/////////////////////
+        public IActionResult Upsert(int? id)
         {
             //IEnumerable<SelectListItem> CategoryList = _unitOfWork.Category
             //   .GetAll()
@@ -42,31 +43,81 @@ namespace BulkyWeb.Areas.Admin.Controllers
 
 
 
-
             ProductVM productVM = new()
             {
                 CatogoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem
                 {
-                  Text = u.Name,
-                  Value = u.Id.ToString()
+                    Text = u.Name,
+                    Value = u.Id.ToString()
                 }),
                 Product = new Product()
             };
+            if (id == null || id == 0)
+            {
 
 
-            return View(productVM);
+
+                return View(productVM);
+            }
+            else
+            {
+                productVM.Product = _unitOfWork.Product.Get(u => u.Id == id);
+                return View(productVM);
+            }
+
+
 
 
         }
         [HttpPost]
-        public IActionResult Create(ProductVM productVM)
+        public IActionResult Upsert(ProductVM productVM, IFormFile? file)
         {
 
 
 
             if (ModelState.IsValid)
             {
-                _unitOfWork.Product.Add(productVM.Product);
+                string wwwRootPath = _webHostEnvironment.WebRootPath;
+                if (file != null)
+                {
+                    string filename = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                    string productPath = Path.Combine(wwwRootPath, @"images\product");
+
+
+
+                    //delete old image
+                    if (!string.IsNullOrEmpty(productVM.Product.ImageUrl))
+                    {
+                        //delete the old image
+                        var oldImageParth = Path.Combine(wwwRootPath, productVM.Product.ImageUrl.TrimStart('\\'));
+
+                        if (System.IO.File.Exists(oldImageParth)) 
+                        {
+                            System.IO.File.Delete(oldImageParth);
+                        }
+
+                    }
+
+                    // update new image
+                    using (var fileStream = new FileStream(Path.Combine(productPath, filename), FileMode.Create))
+                    {
+                        file.CopyTo(fileStream);
+                    }
+
+                    //update image url
+                    productVM.Product.ImageUrl = @$"\images\product\{filename}";
+                }
+
+                if(productVM.Product.Id == 0)
+                {
+                    _unitOfWork.Product.Add(productVM.Product);
+                }
+                else
+                {
+                    _unitOfWork.Product.Update(productVM.Product);
+                }
+
+            
                 _unitOfWork.Save();
                 TempData["success"] = "Product created successfully";
                 return RedirectToAction("Index", "Product");
@@ -82,7 +133,7 @@ namespace BulkyWeb.Areas.Admin.Controllers
 
                 return View(productVM);
             }
-           
+
 
         }
 
