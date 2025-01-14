@@ -28,7 +28,7 @@
 
 
 
-        <table class="table table-bordered table-striped">
+   @*      <table class="table table-bordered table-striped">
             <thead>
                 <tr>
                     <th>Title</th>
@@ -47,7 +47,7 @@
                         <td>@obj.ISBN</td>
                         <td>@obj.Price</td>
                         <td>@obj.Author</td>
-                        <td></td>
+                        <td>@obj.Category.Name</td>
                   
                     
 
@@ -67,10 +67,33 @@
 
             </tbody>
         </table>
+ *@
+
+
+
+
+
+        <table id="tblTable" class="table table-bordered table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>ISBN</th>
+                    <th>Price</th>
+                    <th>Author</th>
+                    <th>Category</th>
+
+                </tr>
+            </thead>
+          
+        </table>
+
+
 
     </div>
 
 </div>
 
 
-
+@section Scripts{
+    <script src="~/js/product.js"></script>
+}

@@ -14,6 +14,13 @@
 
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
+    @* datatables *@
+    <link rel="stylesheet" href="//cdn.datatables.net/2.2.0/css/dataTables.dataTables.min.css" asp-append-version="true" />
+   
+
+
+
+
 </head>
 <body>
     <header>
@@ -76,8 +83,19 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @*sweetalrt *@
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @* datatables *@
+    <script src="//cdn.datatables.net/2.2.0/js/dataTables.min.js" asp-append-version="true"></script>
+
+    @*text redactor *@
     <script src="https://cdn.tiny.cloud/1/acdi5fge9afn4ozcs2kr2tdil45iuganjqmq32u76nxz2wbk/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
 
+ 
+
+   
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
